@@ -1,3 +1,6 @@
+import math
+
+
 class Point2d:
     def __init__(self, x: float, y: float):
         self.x = 1.0 * x
@@ -39,6 +42,11 @@ class Point3d:
 
     def __str__(self):
         return f"({self.x:.3f}, {self.y:.3f}, {self.z:.3f})"
+
+
+def distance3d(p1: Point3d, p2: Point3d) -> float:
+    dis = math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2 + (p1.z - p2.z) ** 2)
+    return dis
 
 
 if __name__ == '__main__':

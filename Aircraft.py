@@ -1,3 +1,4 @@
+import numpy as np
 from Point import Point3d
 
 OIL_DENSITY_KGpm3 = 850
@@ -22,4 +23,5 @@ OIL_TANK_SIZE = (
     Point3d(2.4, 1, 0.5),
 )
 
-OIL_TANK_INIT_OIL = (0.3, 1.5, 2.1, 1.9, 2.6, 0.8)
+OIL_TANK_INIT_OIL_VOLUME = (0.3, 1.5, 2.1, 1.9, 2.6, 0.8)
+OIL_TANK_INIT_OIL_MASS = tuple(np.array(OIL_TANK_INIT_OIL_VOLUME) * OIL_DENSITY_KGpm3)

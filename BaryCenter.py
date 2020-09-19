@@ -51,7 +51,9 @@ class Area:
         b = Geometry.get_distance_between_two_points(p1, p3)
         c = Geometry.get_distance_between_two_points(p2, p3)
         p = (a + b + c) / 2
-        s = math.sqrt(p * (p - a) * (p - b) * (p - c))
+        s2 = p * (p - a) * (p - b) * (p - c)
+        s2 = -s2 if -1e-6 < s2 < 0 else s2
+        s = math.sqrt(s2)
         return s
 
     @staticmethod
@@ -60,7 +62,7 @@ class Area:
         a2 = Geometry.get_distance_between_two_points(p3, p4)
         h1 = Geometry.get_distance_between_point_and_pline(p3, p1, p2)
         h2 = Geometry.get_distance_between_point_and_pline(p4, p1, p2)
-        if math.fabs(a1 - a2) > 1e-8 or math.fabs(h1 - h2) > 1e-8:
+        if math.fabs(a1 - a2) > 1e-6 or math.fabs(h1 - h2) > 1e-6:
             raise ValueError("NOT A Parallelogram")
         s = a1 * h1
         return s
@@ -76,7 +78,7 @@ class BaryCenter:
         return c, s
 
     @staticmethod
-    def quadrangle(p1: Point2d, p2: Point2d, p3: Point2d, p4: Point2d) -> Tuple[Point2d, float]:
+    def polygon4(p1: Point2d, p2: Point2d, p3: Point2d, p4: Point2d) -> Tuple[Point2d, float]:
         c1, s1 = BaryCenter.triangle(p1, p2, p3)
         c2, s2 = BaryCenter.triangle(p1, p3, p4)
         s = s1 + s2
@@ -84,9 +86,18 @@ class BaryCenter:
         return c, s
 
     @staticmethod
-    def pentagon(p1: Point2d, p2: Point2d, p3: Point2d, p4: Point2d, p5: Point2d) -> Tuple[Point2d, float]:
-        c1, s1 = BaryCenter.quadrangle(p1, p2, p3, p4)
+    def polygon5(p1: Point2d, p2: Point2d, p3: Point2d, p4: Point2d, p5: Point2d) -> Tuple[Point2d, float]:
+        c1, s1 = BaryCenter.polygon4(p1, p2, p3, p4)
         c2, s2 = BaryCenter.triangle(p1, p4, p5)
+        s = s1 + s2
+        c = (s1 * c1 + s2 * c2) / s
+        return c, s
+
+    @staticmethod
+    def polygon7(p1: Point2d, p2: Point2d, p3: Point2d, p4: Point2d, p5: Point2d, p6: Point2d,
+                 p7: Point2d) -> Tuple[Point2d, float]:
+        c1, s1 = BaryCenter.polygon5(p1, p2, p3, p4, p5)
+        c2, s2 = BaryCenter.polygon4(p1, p5, p6, p7)
         s = s1 + s2
         c = (s1 * c1 + s2 * c2) / s
         return c, s
@@ -139,8 +150,8 @@ def _tank_status_and_control_points(p0: Point2d, p1: Point2d, p2: Point2d, p3: P
     return tank_status, (b0, b1, b2), (m0, m1, m2, m3), (t0, t1, t2)
 
 
-def _oil_status_and_oil_barycenter(bottom_triangle: tuple, middle_parallelogram: tuple, top_triangle: tuple,
-                                   oil_area: float) -> Tuple[int, Point2d, float, Point2d, Point2d]:
+def _oil_status_and_barycenter(bottom_triangle: tuple, middle_parallelogram: tuple, top_triangle: tuple,
+                               oil_area: float) -> Tuple[int, Point2d, float, Point2d, Point2d]:
     (b0, b1, b2), (m0, m1, m2, m3), (t0, t1, t2) = bottom_triangle, middle_parallelogram, top_triangle
     s1 = Area.triangle(b0, b1, b2)
     s2 = Area.parallelogram(m0, m1, m2, m3)
@@ -158,7 +169,7 @@ def _oil_status_and_oil_barycenter(bottom_triangle: tuple, middle_parallelogram:
         h = (oil_area - s1) / parallelogram_a
         o1 = Geometry.get_point_in_pline_for_given_y(m0.y + h, m0, m3)
         o2 = Geometry.get_point_in_pline_for_given_y(m0.y + h, m1, m2)
-        c, s = BaryCenter.pentagon(b0, b2, o2, o1, b1)
+        c, s = BaryCenter.polygon5(b0, b2, o2, o1, b1)
     else:
         oil_status = 3
         triangle_a = Geometry.get_distance_between_two_points(t0, t1)
@@ -166,7 +177,7 @@ def _oil_status_and_oil_barycenter(bottom_triangle: tuple, middle_parallelogram:
         h = triangle_h - math.sqrt(triangle_h ** 2 - 2 * (oil_area - s1 - s2) * triangle_h / triangle_a)
         o1 = Geometry.get_point_in_pline_for_given_y(t0.y + h, t0, t2)
         o2 = Geometry.get_point_in_pline_for_given_y(t0.y + h, t1, t2)
-        c, s = BaryCenter.pentagon(b0, b2, o2, o1, t0)
+        c, s = BaryCenter.polygon7(b0, m1, m2, o2, o1, m3, m0)
     return oil_status, c, s, o1, o2
 
 
@@ -215,10 +226,12 @@ def _calc_2d_barycenter(length: float, height: float, angle: float, oil_area: fl
     p3 = Point2d(height * math.cos(math.pi / 2 + angle), height * math.sin(math.pi / 2 + angle))
     p2 = p1 + p3
     tank_status, bottom_triangle, middle_parallelogram, top_triangle = _tank_status_and_control_points(p0, p1, p2, p3)
-    oil_status, barycenter, area, o1, o2 = _oil_status_and_oil_barycenter(bottom_triangle, middle_parallelogram,
-                                                                          top_triangle, oil_area)
-    _plot_2d((p0, p1, p2, p3), bottom_triangle, middle_parallelogram, top_triangle,
-             barycenter, o1, o2, length, height, angle, oil_area, area, tank_status, oil_status, description)
+    oil_status, barycenter, area, o1, o2 = _oil_status_and_barycenter(bottom_triangle, middle_parallelogram,
+                                                                      top_triangle, oil_area)
+    # _plot_2d((p0, p1, p2, p3), bottom_triangle, middle_parallelogram, top_triangle,
+    #          barycenter, o1, o2, length, height, angle, oil_area, area, tank_status, oil_status, description)
+    if math.fabs(oil_area - area) > 1e-6:
+        raise ValueError("oil_area must be equal to area")
     return barycenter
 
 
@@ -254,8 +267,8 @@ def calc_3d_barycenter_all_tanks(oil_tank_middle_position_list: List[Point3d], o
 
 
 if __name__ == '__main__':
-    _calc_2d_barycenter(1.0, 2.0, math.radians(-45.0), 0.00)
-    _calc_2d_barycenter(1.0, 2.0, math.radians(-45.0), 0.50)
-    _calc_2d_barycenter(1.0, 2.0, math.radians(-45.0), 1.00)
-    _calc_2d_barycenter(1.0, 2.0, math.radians(-45.0), 1.50)
-    _calc_2d_barycenter(1.0, 2.0, math.radians(-45.0), 2.00)
+    _calc_2d_barycenter(1.0, 2.0, math.radians(-45.0), 0.00, "")
+    _calc_2d_barycenter(1.0, 2.0, math.radians(-45.0), 0.50, "")
+    _calc_2d_barycenter(1.0, 2.0, math.radians(-45.0), 1.00, "")
+    _calc_2d_barycenter(1.0, 2.0, math.radians(-45.0), 1.50, "")
+    _calc_2d_barycenter(1.0, 2.0, math.radians(-45.0), 2.00, "")

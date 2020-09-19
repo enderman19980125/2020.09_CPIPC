@@ -78,5 +78,4 @@ if __name__ == '__main__':
     ax = fig.gca(projection='3d')
     plot_3d()
 
-
     plt.show()

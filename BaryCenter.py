@@ -185,6 +185,11 @@ def _plot_2d(tank_points: tuple, bottom_triangle: tuple, middle_parallelogram: t
              barycenter: Point2d, o1: Point2d, o2: Point2d,
              length: float, height: float, angle: float, oil_area: float, area: float,
              tank_status: str, oil_status: int, description: str):
+    time = int((description.split("s")[0]).split("=")[1])
+    if time % 100 != 0:
+        return
+    return
+
     plt.clf()
 
     p0, p1, p2, p3 = tank_points
@@ -217,7 +222,7 @@ def _plot_2d(tank_points: tuple, bottom_triangle: tuple, middle_parallelogram: t
               f"barycenter = ({barycenter.x:.2f}, {barycenter.y:.2f})")
 
     plt.axis('equal')
-    plt.show()
+    plt.savefig(f"Problem1/{description}.jpg")
 
 
 def _calc_2d_barycenter(length: float, height: float, angle: float, oil_area: float, description: str) -> Point2d:
@@ -228,8 +233,8 @@ def _calc_2d_barycenter(length: float, height: float, angle: float, oil_area: fl
     tank_status, bottom_triangle, middle_parallelogram, top_triangle = _tank_status_and_control_points(p0, p1, p2, p3)
     oil_status, barycenter, area, o1, o2 = _oil_status_and_barycenter(bottom_triangle, middle_parallelogram,
                                                                       top_triangle, oil_area)
-    # _plot_2d((p0, p1, p2, p3), bottom_triangle, middle_parallelogram, top_triangle,
-    #          barycenter, o1, o2, length, height, angle, oil_area, area, tank_status, oil_status, description)
+    _plot_2d((p0, p1, p2, p3), bottom_triangle, middle_parallelogram, top_triangle,
+             barycenter, o1, o2, length, height, angle, oil_area, area, tank_status, oil_status, description)
     if math.fabs(oil_area - area) > 1e-6:
         raise ValueError("oil_area must be equal to area")
     return barycenter
@@ -258,7 +263,7 @@ def calc_3d_barycenter_all_tanks(oil_tank_middle_position_list: List[Point3d], o
     composed_barycenter = Point3d(0.0, 0.0, 0.0)
     for k, (oil_tank_middle_position, oil_tank_size, oil_volume) in \
             enumerate(zip(oil_tank_middle_position_list, oil_tank_size_list, oil_volume_list), start=1):
-        description_k = f"{description}, No.{k}-OilTank"
+        description_k = f"{description}, OilTank = No.{k}"
         barycenter, mass = _calc_3d_barycenter(oil_tank_middle_position, oil_tank_size, oil_volume, angle,
                                                description_k)
         composed_barycenter = composed_barycenter + mass * barycenter

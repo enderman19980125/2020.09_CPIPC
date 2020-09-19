@@ -38,10 +38,7 @@ def plot_line(p1: Point3d, p2: Point3d) -> None:
     ax.plot([x1, x2], [y1, y2], [z1, z2], color="black")
 
 
-if __name__ == '__main__':
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-
+def plot_3d() -> None:
     ax.scatter(0, 0, 0, color="black")
 
     colors = ["", "red", "orange", "yellow", "green", "blue", "purple"]
@@ -57,8 +54,29 @@ if __name__ == '__main__':
     plot_line(Aircraft.OIL_TANK_MIDDLE_POSITION[0], Aircraft.OIL_TANK_MIDDLE_POSITION[1])
     plot_line(Aircraft.OIL_TANK_MIDDLE_POSITION[5], Aircraft.OIL_TANK_MIDDLE_POSITION[4])
 
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    ax.legend()
+    ax.set_xlabel('X', fontsize=16)
+    ax.set_ylabel('Y', fontsize=16)
+    ax.set_zlabel('Z', fontsize=16)
+    ax.set_xlim([-6, 10])
+    ax.set_xticks([-6, -4, -2, 0, 2, 4, 6, 8, 10])
+    ax.set_xticklabels([-6, -4, -2, 0, 2, 4, 6, 8, 10], fontsize=16)
+    ax.set_ylim([-6, 10])
+    ax.set_yticks([-6, -4, -2, 0, 2, 4, 6, 8, 10])
+    ax.set_yticklabels([-6, -4, -2, 0, 2, 4, 6, 8, 10], fontsize=16)
+    ax.set_zlim([-6, 10])
+    ax.set_zticks([-6, -4, -2, 0, 2, 4, 6, 8, 10])
+    ax.set_zticklabels([-6, -4, -2, 0, 2, 4, 6, 8, 10], fontsize=16)
+
+
+def plot_2d() -> None:
+    pass
+
+
+if __name__ == '__main__':
+    fig = plt.figure()
+
+    ax = fig.gca(projection='3d')
+    plot_3d()
+
+
     plt.show()

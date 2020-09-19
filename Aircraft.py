@@ -1,6 +1,8 @@
 import numpy as np
 from Point import Point3d
 
+AIRCRAFT_NET_WEIGHT = 3000
+
 OIL_DENSITY_KGpm3 = 850
 
 BARYCENTER_WITHOUT_OIL = Point3d(0.0, 0.0, 0.0)

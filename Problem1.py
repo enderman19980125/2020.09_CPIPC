@@ -3,6 +3,7 @@ import pandas as pd
 import math
 import Aircraft
 import BaryCenter
+from Point import Point3d
 
 if __name__ == '__main__':
     rest_oil_mass_np = np.array(Aircraft.OIL_TANK_INIT_OIL_MASS)
@@ -14,9 +15,11 @@ if __name__ == '__main__':
         rest_oil_mass_np = rest_oil_mass_np - oil_consume_mass_np
         rest_oil_volume_np = rest_oil_mass_np / Aircraft.OIL_DENSITY_KGpm3
         description = f"time = {time:d}s"
-        barycenter, mass = BaryCenter.calc_3d_barycenter_all_tanks(
+        barycenter_oil, mass_oil = BaryCenter.calc_3d_barycenter_all_tanks(
             Aircraft.OIL_TANK_MIDDLE_POSITION, Aircraft.OIL_TANK_SIZE,
             rest_oil_volume_np.tolist(), math.radians(angle), description)
+        barycenter, mass = BaryCenter.BaryCenter.compose3d([barycenter_oil, Point3d(0.0, 0.0, 0.0)],
+                                                           [mass_oil, Aircraft.AIRCRAFT_NET_WEIGHT])
         print(f"{time:d}\t{barycenter.x}\t{barycenter.y}\t{barycenter.z}")
 
     print(rest_oil_mass_np)

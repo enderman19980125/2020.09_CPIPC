@@ -252,7 +252,8 @@ def _calc_3d_barycenter(oil_tank_middle_position: Point3d, oil_tank_size: Point3
 
 
 def calc_3d_barycenter_all_tanks(oil_tank_middle_position_list: List[Point3d], oil_tank_size_list: List[Point3d],
-                                 oil_volume_list: List[float], angle: float, description: str) -> Tuple[Point3d, float]:
+                                 oil_volume_list: List[float], angle: float,
+                                 description: str) -> Tuple[Point3d, float]:
     composed_mass = 0.0
     composed_barycenter = Point3d(0.0, 0.0, 0.0)
     for k, (oil_tank_middle_position, oil_tank_size, oil_volume) in \

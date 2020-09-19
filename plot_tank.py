@@ -32,6 +32,12 @@ def plot_cube(center: Point3d, size: Point3d, color: str, index: int) -> None:
     ax.plot_surface(x, y, z, alpha=0.4, color=color)
 
 
+def plot_line(p1: Point3d, p2: Point3d) -> None:
+    x1, y1, z1 = p1.x, p1.y, p1.z
+    x2, y2, z2 = p2.x, p2.y, p2.z
+    ax.plot([x1, x2], [y1, y2], [z1, z2], color="black")
+
+
 if __name__ == '__main__':
     fig = plt.figure()
     ax = fig.gca(projection='3d')
@@ -42,6 +48,14 @@ if __name__ == '__main__':
     for k, (tank_center, tank_size) in enumerate(zip(Aircraft.OIL_TANK_MIDDLE_POSITION, Aircraft.OIL_TANK_SIZE),
                                                  start=1):
         plot_cube(tank_center, tank_size, colors[k], k)
+
+    plot_line(Point3d(0.0, 0.0, 0.0), Aircraft.OIL_TANK_MIDDLE_POSITION[1])
+    plot_line(Point3d(0.0, 0.0, 0.0), Aircraft.OIL_TANK_MIDDLE_POSITION[2])
+    plot_line(Point3d(0.0, 0.0, 0.0), Aircraft.OIL_TANK_MIDDLE_POSITION[3])
+    plot_line(Point3d(0.0, 0.0, 0.0), Aircraft.OIL_TANK_MIDDLE_POSITION[4])
+
+    plot_line(Aircraft.OIL_TANK_MIDDLE_POSITION[0], Aircraft.OIL_TANK_MIDDLE_POSITION[1])
+    plot_line(Aircraft.OIL_TANK_MIDDLE_POSITION[5], Aircraft.OIL_TANK_MIDDLE_POSITION[4])
 
     ax.set_xlabel('X')
     ax.set_ylabel('Y')

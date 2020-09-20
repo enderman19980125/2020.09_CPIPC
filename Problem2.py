@@ -82,6 +82,7 @@ def evaluate_oil_plan(time: int, ideal_oil_consume_mass: float, rest_oil_mass_np
     real_oil_consume_mass_np = np.zeros(6)
     previous_oil_tanks = get_previous_oil_tanks_list()
 
+    # TODO: edit oil plan
     if time <= 900:
         oil_output_from(4, ideal_oil_consume_mass)
         if not is_meet_oil_need():
@@ -115,7 +116,9 @@ def calc(ideal_barycenters_np: np.array, ideal_oil_consume_mass_np: np.array) ->
     oil_consume_mass_np = np.zeros(6)
     for time in range(7200):
         time = int(time)
-        if time > 1800:
+
+        # TODO: time limit
+        if time > 4500:
             break
 
         ideal_barycenter = ideal_barycenters_np[time]

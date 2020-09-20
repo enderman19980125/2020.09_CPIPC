@@ -115,8 +115,13 @@ def plot_track(ideal_barycenters_np: np.array, real_barycenters_np: np.array = N
     plt.show()
 
 
-def evaluate_oil_plan(time: int, ideal_oil_consume_mass: float, rest_oil_mass_np: np.array,
-                      previous_oil_consume_mass_np: np.array) -> np.array:
+def evaluate_oil_plan(time: int, ideal_oil_consume_mass: float, rest_oil_mass_np: np.array) -> np.array:
+    def is_meet_oil_need() -> bool:
+        return np.sum(real_oil_consume_mass_np) <= -ideal_oil_consume_mass
+
+    def oil_still_need_mass() -> float:
+        return ideal_oil_consume_mass + np.sum(real_oil_consume_mass_np)
+
     def oil_output_from(oil_tank: int, oil_mass: float) -> bool:
         oil_mass = min(oil_mass, Aircraft.OIL_TANK_MAX_SPEED_KGps[oil_tank - 1])
         if oil_tank == 1:
@@ -132,21 +137,7 @@ def evaluate_oil_plan(time: int, ideal_oil_consume_mass: float, rest_oil_mass_np
             return True
         return False
 
-    def is_meet_oil_need() -> bool:
-        return np.sum(real_oil_consume_mass_np) <= -ideal_oil_consume_mass
-
-    def get_previous_oil_tanks_list() -> List[int]:
-        oil_tanks_list = []
-        for k in range(1, 7):
-            if previous_oil_consume_mass_np[k - 1] < 0:
-                oil_tanks_list.append(k)
-        return oil_tanks_list
-
-    def oil_still_need_mass() -> float:
-        return ideal_oil_consume_mass + np.sum(real_oil_consume_mass_np[[1, 2, 3, 4]])
-
     real_oil_consume_mass_np = np.zeros(6)
-    previous_oil_tanks = get_previous_oil_tanks_list()
 
     # TODO: edit oil plan
     if time <= 600:
@@ -168,13 +159,21 @@ def evaluate_oil_plan(time: int, ideal_oil_consume_mass: float, rest_oil_mass_np
         if not is_meet_oil_need():
             oil_output_from(5, oil_still_need_mass())
     elif time <= 4900:
-        if time <= 4711:
-            oil_output_from(6, ideal_oil_consume_mass * 0.1)
-        else:
-            oil_output_from(6, ideal_oil_consume_mass * 0.1)
-        oil_output_from(4, oil_still_need_mass())
+        oil_output_from(5, oil_still_need_mass())
+        oil_output_from(6, 1.1)
+        if not is_meet_oil_need() and time <= 4740:
+            oil_output_from(3, oil_still_need_mass())
+        if not is_meet_oil_need() and time > 4740:
+            oil_output_from(4, oil_still_need_mass())
+    elif time <= 5400:
+        oil_output_from(5, oil_still_need_mass())
+        oil_output_from(6, 0.2)
         if not is_meet_oil_need():
-            oil_output_from(5, oil_still_need_mass())
+            oil_output_from(4, oil_still_need_mass() * (1 + 1e-8))
+    elif time <= 7200:
+        oil_output_from(5, oil_still_need_mass())
+        if not is_meet_oil_need():
+            oil_output_from(4, oil_still_need_mass() + 1e-10)
 
     if not is_meet_oil_need():
         raise ValueError("Real Oil < Ideal Oil")
@@ -193,7 +192,7 @@ def calc(ideal_barycenters_np: np.array, ideal_oil_consume_mass_np: np.array) ->
         time = int(time)
 
         # TODO: time limit
-        if time > 100:
+        if time > 2010:
             break
 
         ideal_barycenter = ideal_barycenters_np[time]

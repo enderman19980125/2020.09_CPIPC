@@ -59,7 +59,7 @@ def plot_oil_main_tank() -> None:
     for time, s1, s2, s3, s4, s5, s6 in data:
         time = int(time)
         x.append(time)
-        s = s1 + s2 + s3 + s4 + s5 if time <= 4900 else s1 + s2 + s3 + s4 + s5 + s6
+        s = s2 + s3 + s4 + s5
         y.append(s)
 
     plt.fill_between(x, 0, y, color="red", alpha=0.8)

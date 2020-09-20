@@ -10,10 +10,53 @@ import BaryCenter
 from Point import Point3d, distance3d
 
 
+# max_distance = 0.06760845436211564
+
+
+def plot_oil() -> None:
+    data = pd.read_excel("Results.xlsx", "第二问结果").values
+    x, y = [[], [], [], [], [], [], []], [[], [], [], [], [], [], []]
+    scale = 1.7
+    for time, s1, s2, s3, s4, s5, s6 in data:
+        time = int(time)
+        if s1 > 0:
+            x[1].append(time)
+            y[1].append(1 + s1 / scale)
+        if s2 > 0:
+            x[2].append(time)
+            y[2].append(2 + s2 / scale)
+        if s3 > 0:
+            x[3].append(time)
+            y[3].append(3 + s3 / scale)
+        if s4 > 0:
+            x[4].append(time)
+            y[4].append(4 + s4 / scale)
+        if s5 > 0:
+            x[5].append(time)
+            y[5].append(5 + s5 / scale)
+        if s6 > 0:
+            x[6].append(time)
+            y[6].append(6 + s6 / scale)
+
+    colors = ["", "red", "orange", "yellow", "green", "blue", "purple"]
+    for k in range(1, 7):
+        xk, yk = x[k], y[k]
+        plt.fill_between(xk, k, yk, color=colors[k])
+
+    plt.xlabel("Time (s)", fontsize=16)
+    plt.xlim(0, 7200)
+    plt.xticks([0, 1800, 3600, 5400, 7200], fontsize=16)
+    plt.yticks([1, 2, 3, 4, 5, 6], ["No.1 Tank", "No.2 Tank", "No.3 Tank", "No.4 Tank", "No.5 Tank", "No.6 Tank"],
+               fontsize=16)
+
+    plt.grid(axis="both")
+    plt.show()
+
+
 def plot_track(ideal_barycenters_np: np.array, real_barycenters_np: np.array = None) -> None:
-    def plot_one_track(data: np.array, color: str) -> None:
+    def plot_one_track(data: np.array, color: str, ideal_or_real: str) -> None:
         x, y, z = data[:, 0].flatten(), data[:, 1].flatten(), data[:, 2].flatten()
-        ax.scatter(x, y, z, color=color)
+        ax.scatter(x, y, z, color=color, label=ideal_or_real)
 
         pz0 = -0.2
         xx, yy, zz = x[::100], y[::100], z[::100]
@@ -23,14 +66,18 @@ def plot_track(ideal_barycenters_np: np.array, real_barycenters_np: np.array = N
         colors = ["red", "orange", "yellow", "green", "blue", "purple"]
         for k, time in enumerate([1, 1800, 3600, 5400, 7200]):
             if time < x.shape[0]:
-                ax.scatter(x[time - 1], y[time - 1], z[time - 1], s=120, color=colors[k], label=f"{time}s")
+                if ideal_or_real == "Real":
+                    ax.scatter(x[time - 1], y[time - 1], z[time - 1], s=120, color=colors[k],
+                               label=f"{ideal_or_real}")
+                else:
+                    ax.scatter(x[time - 1], y[time - 1], z[time - 1], s=120, color=colors[k])
 
     fig = plt.figure()
     ax = fig.gca(projection='3d')
 
-    plot_one_track(ideal_barycenters_np, "deepskyblue")
+    plot_one_track(ideal_barycenters_np, "deepskyblue", "Ideal")
     if real_barycenters_np is not None:
-        plot_one_track(real_barycenters_np, "yellow")
+        plot_one_track(real_barycenters_np, "yellow", "Real")
 
     ax.set_xlabel('X', fontsize=16)
     ax.set_ylabel('Y', fontsize=16)
@@ -49,8 +96,13 @@ def plot_track(ideal_barycenters_np: np.array, real_barycenters_np: np.array = N
     plt.show()
 
 
-def evaluate_oil_plan(time: int, ideal_oil_consume_mass: float, rest_oil_mass_np: np.array,
-                      previous_oil_consume_mass_np: np.array) -> np.array:
+def evaluate_oil_plan(time: int, ideal_oil_consume_mass: float, rest_oil_mass_np: np.array) -> np.array:
+    def is_meet_oil_need() -> bool:
+        return np.sum(real_oil_consume_mass_np) <= -ideal_oil_consume_mass
+
+    def oil_still_need_mass() -> float:
+        return ideal_oil_consume_mass + np.sum(real_oil_consume_mass_np)
+
     def oil_output_from(oil_tank: int, oil_mass: float) -> bool:
         oil_mass = min(oil_mass, Aircraft.OIL_TANK_MAX_SPEED_KGps[oil_tank - 1])
         if oil_tank == 1:
@@ -66,21 +118,7 @@ def evaluate_oil_plan(time: int, ideal_oil_consume_mass: float, rest_oil_mass_np
             return True
         return False
 
-    def is_meet_oil_need() -> bool:
-        return np.sum(real_oil_consume_mass_np) <= -ideal_oil_consume_mass
-
-    def get_previous_oil_tanks_list() -> List[int]:
-        oil_tanks_list = []
-        for k in range(1, 7):
-            if previous_oil_consume_mass_np[k - 1] < 0:
-                oil_tanks_list.append(k)
-        return oil_tanks_list
-
-    def oil_still_need_mass() -> float:
-        return ideal_oil_consume_mass + np.sum(real_oil_consume_mass_np[[1, 2, 3, 4]])
-
     real_oil_consume_mass_np = np.zeros(6)
-    previous_oil_tanks = get_previous_oil_tanks_list()
 
     # TODO: edit oil plan
     if time <= 600:
@@ -102,13 +140,21 @@ def evaluate_oil_plan(time: int, ideal_oil_consume_mass: float, rest_oil_mass_np
         if not is_meet_oil_need():
             oil_output_from(5, oil_still_need_mass())
     elif time <= 4900:
-        if time <= 4711:
-            oil_output_from(6, ideal_oil_consume_mass * 0.1)
-        else:
-            oil_output_from(6, ideal_oil_consume_mass * 0.1)
-        oil_output_from(4, oil_still_need_mass())
+        oil_output_from(5, oil_still_need_mass())
+        oil_output_from(6, 1.1)
+        if not is_meet_oil_need() and time <= 4740:
+            oil_output_from(3, oil_still_need_mass())
+        if not is_meet_oil_need() and time > 4740:
+            oil_output_from(4, oil_still_need_mass())
+    elif time <= 5400:
+        oil_output_from(5, oil_still_need_mass())
+        oil_output_from(6, 0.2)
         if not is_meet_oil_need():
-            oil_output_from(5, oil_still_need_mass())
+            oil_output_from(4, oil_still_need_mass() * (1 + 1e-8))
+    elif time <= 7200:
+        oil_output_from(5, oil_still_need_mass())
+        if not is_meet_oil_need():
+            oil_output_from(4, oil_still_need_mass() + 1e-10)
 
     if not is_meet_oil_need():
         raise ValueError("Real Oil < Ideal Oil")
@@ -121,20 +167,18 @@ def calc(ideal_barycenters_np: np.array, ideal_oil_consume_mass_np: np.array) ->
     rest_oil_mass_np = np.array(Aircraft.OIL_TANK_INIT_OIL_MASS)
     max_distance = 0.0
     angle = 0.0
-    oil_consume_mass_np = np.zeros(6)
     for time in range(7200):
         time = int(time)
 
         # TODO: time limit
-        if time > 4500:
+        if time > 7200:
             break
 
         ideal_barycenter = ideal_barycenters_np[time]
         ideal_barycenter = Point3d(ideal_barycenter[0], ideal_barycenter[1], ideal_barycenter[2])
         ideal_oil_consume_mass = ideal_oil_consume_mass_np[time]
 
-        oil_consume_mass_np = evaluate_oil_plan(time, ideal_oil_consume_mass, rest_oil_mass_np,
-                                                oil_consume_mass_np)
+        oil_consume_mass_np = evaluate_oil_plan(time, ideal_oil_consume_mass, rest_oil_mass_np)
 
         rest_oil_mass_np = rest_oil_mass_np + oil_consume_mass_np
         rest_oil_volume_np = rest_oil_mass_np / Aircraft.OIL_DENSITY_KGpm3
@@ -146,7 +190,7 @@ def calc(ideal_barycenters_np: np.array, ideal_oil_consume_mass_np: np.array) ->
                                                                 [mass_oil, Aircraft.AIRCRAFT_NET_WEIGHT])
         real_barycenters_list.append([real_barycenter.x, real_barycenter.y, real_barycenter.z])
         # print(f"{time:d}\t{real_barycenter.x}\t{real_barycenter.y}\t{real_barycenter.z}")
-        print(f"{time:d}\t{rest_oil_mass_np}\t{oil_consume_mass_np}")
+        print(f"{time:d}\t{oil_consume_mass_np.tolist()}")
 
         distance = distance3d(ideal_barycenter, real_barycenter)
         max_distance = max(max_distance, distance)
@@ -158,10 +202,11 @@ def calc(ideal_barycenters_np: np.array, ideal_oil_consume_mass_np: np.array) ->
 
 
 if __name__ == '__main__':
-    data_ = pd.read_excel("data.xlsx", "Problem2").values
-    np.set_printoptions(precision=3)
-    ideal_barycenters_np_ = data_[:, 1:4]
-    ideal_oil_consume_mass_np_ = data_[:, 4]
+    # data_ = pd.read_excel("data.xlsx", "Problem2").values
+    # np.set_printoptions(precision=3)
+    # ideal_barycenters_np_ = data_[:, 1:4]
+    # ideal_oil_consume_mass_np_ = data_[:, 4]
     # plot_track(ideal_barycenters_np_, None)
-    real_barycenters_np_ = calc(ideal_barycenters_np_, ideal_oil_consume_mass_np_)
-    plot_track(ideal_barycenters_np_[:real_barycenters_np_.shape[0]], real_barycenters_np_)
+    # real_barycenters_np_ = calc(ideal_barycenters_np_, ideal_oil_consume_mass_np_)
+    # plot_track(ideal_barycenters_np_[:real_barycenters_np_.shape[0]], real_barycenters_np_)
+    plot_oil()

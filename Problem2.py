@@ -88,8 +88,7 @@ def plot_track(ideal_barycenters_np: np.array, real_barycenters_np: np.array = N
         for k, time in enumerate([1, 1800, 3600, 5400, 7200]):
             if time < x.shape[0]:
                 if ideal_or_real == "Real":
-                    ax.scatter(x[time - 1], y[time - 1], z[time - 1], s=120, color=colors[k],
-                               label=f"{ideal_or_real}")
+                    ax.scatter(x[time - 1], y[time - 1], z[time - 1], s=120, color=colors[k], label=f"{time}")
                 else:
                     ax.scatter(x[time - 1], y[time - 1], z[time - 1], s=120, color=colors[k])
 
@@ -223,12 +222,12 @@ def calc(ideal_barycenters_np: np.array, ideal_oil_consume_mass_np: np.array) ->
 
 
 if __name__ == '__main__':
-    # data_ = pd.read_excel("data.xlsx", "Problem2").values
-    # np.set_printoptions(precision=3)
-    # ideal_barycenters_np_ = data_[:, 1:4]
-    # ideal_oil_consume_mass_np_ = data_[:, 4]
+    data_ = pd.read_excel("data.xlsx", "Problem2").values
+    np.set_printoptions(precision=3)
+    ideal_barycenters_np_ = data_[:, 1:4]
+    ideal_oil_consume_mass_np_ = data_[:, 4]
     # plot_track(ideal_barycenters_np_, None)
-    # real_barycenters_np_ = calc(ideal_barycenters_np_, ideal_oil_consume_mass_np_)
-    # plot_track(ideal_barycenters_np_[:real_barycenters_np_.shape[0]], real_barycenters_np_)
+    real_barycenters_np_ = calc(ideal_barycenters_np_, ideal_oil_consume_mass_np_)
+    plot_track(ideal_barycenters_np_[:real_barycenters_np_.shape[0]], real_barycenters_np_)
     # plot_oil()
-    plot_oil_main_tank()
+    # plot_oil_main_tank()

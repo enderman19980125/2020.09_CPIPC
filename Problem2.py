@@ -53,6 +53,27 @@ def plot_oil() -> None:
     plt.show()
 
 
+def plot_oil_main_tank() -> None:
+    data = pd.read_excel("Results.xlsx", "第二问结果").values
+    x, y = [], []
+    for time, s1, s2, s3, s4, s5, s6 in data:
+        time = int(time)
+        x.append(time)
+        s = s1 + s2 + s3 + s4 + s5 if time <= 4900 else s1 + s2 + s3 + s4 + s5 + s6
+        y.append(s)
+
+    plt.fill_between(x, 0, y, color="red", alpha=0.8)
+
+    plt.xlabel("Time (s)", fontsize=16)
+    plt.xlim(0, 7200)
+    plt.xticks([0, 1800, 3600, 5400, 7200], fontsize=16)
+    plt.ylabel("Speed (kg/s)", fontsize=16)
+    plt.yticks([0, 0.5, 1, 1.5, 2.0], [0, 0.5, 1, 1.5, 2.0], fontsize=16)
+
+    plt.grid(axis="both")
+    plt.show()
+
+
 def plot_track(ideal_barycenters_np: np.array, real_barycenters_np: np.array = None) -> None:
     def plot_one_track(data: np.array, color: str, ideal_or_real: str) -> None:
         x, y, z = data[:, 0].flatten(), data[:, 1].flatten(), data[:, 2].flatten()
@@ -209,4 +230,5 @@ if __name__ == '__main__':
     # plot_track(ideal_barycenters_np_, None)
     # real_barycenters_np_ = calc(ideal_barycenters_np_, ideal_oil_consume_mass_np_)
     # plot_track(ideal_barycenters_np_[:real_barycenters_np_.shape[0]], real_barycenters_np_)
-    plot_oil()
+    # plot_oil()
+    plot_oil_main_tank()

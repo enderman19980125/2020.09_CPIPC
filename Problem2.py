@@ -126,7 +126,7 @@ def calc(ideal_barycenters_np: np.array, ideal_oil_consume_mass_np: np.array) ->
         time = int(time)
 
         # TODO: time limit
-        if time > 4900:
+        if time > 4500:
             break
 
         ideal_barycenter = ideal_barycenters_np[time]

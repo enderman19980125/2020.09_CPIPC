@@ -178,14 +178,14 @@ def evaluate_oil_plan(time: int, ideal_oil_consume_mass: float, rest_oil_mass_np
 def calc(ideal_barycenters_np: np.array, ideal_oil_consume_mass_np: np.array, angle_np: np.array) -> np.array:
     real_barycenters_list = []
     # OIL_TANK_INIT_OIL_VOLUME (0.405, 1.936, 2.376, 2.652, 2.88, 1.2)
-    rest_oil_mass_np = np.array([0.4, 1.9, 2.3, 2.6, 2.8, 1.2]) * Aircraft.OIL_DENSITY_KGpm3
+    rest_oil_mass_np = np.array(Aircraft.OIL_TANK_INIT_OIL_MASS)
     max_distance = 0.0
-    angle = 0.0
     for time in range(7200):
         time = int(time)
+        angle = angle_np[time]
 
         # TODO: time limit
-        if time > 7200:
+        if time > 1000:
             break
 
         ideal_barycenter = ideal_barycenters_np[time]

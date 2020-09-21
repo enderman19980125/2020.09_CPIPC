@@ -10,49 +10,30 @@ import BaryCenter
 from Point import Point3d, distance3d
 
 
-# max_distance = 0.06760845436211564
-
+# max_distance = 0.06963137125681296
 
 def plot_oil() -> None:
-    data = pd.read_excel("Results.xlsx", "第二问结果").values
+    data = pd.read_excel("Results.xlsx", "第四问结果").values[:, :7]
     x, y = [[], [], [], [], [], [], []], [[], [], [], [], [], [], []]
-    scale = 1.7
+    scale = 1.8
     for time, s1, s2, s3, s4, s5, s6 in data:
         time = int(time)
-        if (len(y[1]) > 0 and y[1][-1] == 1) and s1 > 0:
-            x[1].append(time)
-            y[1].append(1)
-        if (len(y[2]) > 0 and y[2][-1] == 2) and s2 > 0:
-            x[2].append(time)
-            y[2].append(2)
-        if (len(y[3]) > 0 and y[3][-1] == 3) and s3 > 0:
-            x[3].append(time)
-            y[3].append(3)
-        if (len(y[4]) > 0 and y[4][-1] == 4) and s4 > 0:
-            x[4].append(time)
-            y[4].append(4)
-        if (len(y[5]) > 0 and y[5][-1] == 5) and s5 > 0:
-            x[5].append(time)
-            y[5].append(5)
-        if (len(y[6]) > 0 and y[6][-1] == 6) and s6 > 0:
-            x[6].append(time)
-            y[6].append(6)
-        if (len(y[1]) > 0 and y[1][-1] > 1) or s1 > 0:
+        if s1 > 0:
             x[1].append(time)
             y[1].append(1 + s1 / scale)
-        if (len(y[2]) > 0 and y[2][-1] > 2) or s2 > 0:
+        if s2 > 0:
             x[2].append(time)
             y[2].append(2 + s2 / scale)
-        if (len(y[3]) > 0 and y[3][-1] > 3) or s3 > 0:
+        if s3 > 0:
             x[3].append(time)
             y[3].append(3 + s3 / scale)
-        if (len(y[4]) > 0 and y[4][-1] > 4) or s4 > 0:
+        if s4 > 0:
             x[4].append(time)
             y[4].append(4 + s4 / scale)
-        if (len(y[5]) > 0 and y[5][-1] > 5) or s5 > 0:
+        if s5 > 0:
             x[5].append(time)
             y[5].append(5 + s5 / scale)
-        if (len(y[6]) > 0 and y[6][-1] > 6) or s6 > 0:
+        if s6 > 0:
             x[6].append(time)
             y[6].append(6 + s6 / scale)
 
@@ -72,7 +53,7 @@ def plot_oil() -> None:
 
 
 def plot_oil_main_tank() -> None:
-    data = pd.read_excel("Results.xlsx", "第二问结果").values
+    data = pd.read_excel("Results.xlsx", "第四问结果").values[:, :7]
     x, y = [], []
     for time, s1, s2, s3, s4, s5, s6 in data:
         time = int(time)
@@ -117,18 +98,18 @@ def plot_track(ideal_barycenters_np: np.array, real_barycenters_np: np.array = N
     if real_barycenters_np is not None:
         plot_one_track(real_barycenters_np, "yellow", "Real")
 
-    ax.set_xlabel('X', fontsize=16)
-    ax.set_ylabel('Y', fontsize=16)
-    ax.set_zlabel('Z', fontsize=16)
-    ax.set_xlim([-2.0, 0.0])
-    ax.set_xticks([-2.0, -1.6, -1.2, -0.8, -0.4, 0.0])
-    ax.set_xticklabels([-2.0, -1.6, -1.2, -0.8, -0.4, 0.0], fontsize=16)
-    ax.set_ylim([-1.0, 1.0])
-    ax.set_yticks([-1.0, -0.6, -0.2, 0.2, 0.6, 1.0])
-    ax.set_yticklabels([-1.0, -0.6, -0.2, 0.2, 0.6, 1.0], fontsize=16)
-    ax.set_zlim([-0.4, 1.6])
-    ax.set_zticks([-0.4, 0.0, 0.4, 0.8, 1.2, 1.6])
-    ax.set_zticklabels([-0.4, 0.0, 0.4, 0.8, 1.2, 1.6], fontsize=16)
+    # ax.set_xlabel('X', fontsize=16)
+    # ax.set_ylabel('Y', fontsize=16)
+    # ax.set_zlabel('Z', fontsize=16)
+    ax.set_xlim([-0.8, 0.8])
+    ax.set_xticks([-0.8, -0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8])
+    ax.set_xticklabels([-0.8, -0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8], fontsize=16)
+    ax.set_ylim([-0.6, 1.0])
+    ax.set_yticks([-0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
+    ax.set_yticklabels([-0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0], fontsize=16)
+    ax.set_zlim([-0.8, 0.8])
+    ax.set_zticks([-0.8, -0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8])
+    ax.set_zticklabels([-0.8, -0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8], fontsize=16)
     ax.legend(loc="upper left", fontsize=16)
 
     plt.show()
@@ -159,40 +140,34 @@ def evaluate_oil_plan(time: int, ideal_oil_consume_mass: float, rest_oil_mass_np
     real_oil_consume_mass_np = np.zeros(6)
 
     # TODO: edit oil plan
-    if time <= 600:
-        oil_output_from(2, ideal_oil_consume_mass)
-        oil_output_from(1, ideal_oil_consume_mass * 0.5)
-        if not is_meet_oil_need():
-            oil_output_from(4, oil_still_need_mass())
-    elif time <= 1800:
-        oil_output_from(2, ideal_oil_consume_mass)
-        oil_output_from(1, ideal_oil_consume_mass * 0.25)
-        if not is_meet_oil_need():
-            oil_output_from(4, oil_still_need_mass())
-    elif time <= 3000:
+    if time <= 2020:
         oil_output_from(4, ideal_oil_consume_mass)
         if not is_meet_oil_need():
             oil_output_from(2, oil_still_need_mass())
-    elif time <= 4500:
-        oil_output_from(3, ideal_oil_consume_mass)
+    elif time <= 2400:
+        oil_output_from(5, ideal_oil_consume_mass)
+        oil_output_from(6, ideal_oil_consume_mass * 0.5)
         if not is_meet_oil_need():
-            oil_output_from(5, oil_still_need_mass())
-    elif time <= 4900:
-        oil_output_from(5, oil_still_need_mass())
-        oil_output_from(6, 1.1)
-        if not is_meet_oil_need() and time <= 4740:
             oil_output_from(3, oil_still_need_mass())
-        if not is_meet_oil_need() and time > 4740:
-            oil_output_from(4, oil_still_need_mass())
-    elif time <= 5400:
-        oil_output_from(5, oil_still_need_mass())
-        oil_output_from(6, 0.2)
+    elif time <= 3300:
+        oil_output_from(5, ideal_oil_consume_mass)
         if not is_meet_oil_need():
-            oil_output_from(4, oil_still_need_mass() * (1 + 1e-8))
+            oil_output_from(3, oil_still_need_mass())
+    elif time <= 4000:
+        if time <= 3600:
+            oil_output_from(2, ideal_oil_consume_mass * (0.6 + (time - 3300) / 300 * 0.4))
+        elif time <= 4000:
+            oil_output_from(2, ideal_oil_consume_mass)
+            oil_output_from(6, ideal_oil_consume_mass * max(0.0, 1.0 - (time - 3600) / 700 * 2.0))
+        if not is_meet_oil_need():
+            oil_output_from(5, oil_still_need_mass() + 1e-8)
+    elif time <= 4300:
+        oil_output_from(2, ideal_oil_consume_mass)
+        oil_output_from(1, ideal_oil_consume_mass * 0.5)
+        if not is_meet_oil_need():
+            oil_output_from(3, oil_still_need_mass())
     elif time <= 7200:
-        oil_output_from(5, oil_still_need_mass())
-        if not is_meet_oil_need():
-            oil_output_from(4, oil_still_need_mass() + 1e-10)
+        oil_output_from(3, ideal_oil_consume_mass * 2)
 
     if not is_meet_oil_need():
         raise ValueError("Real Oil < Ideal Oil")
@@ -200,9 +175,10 @@ def evaluate_oil_plan(time: int, ideal_oil_consume_mass: float, rest_oil_mass_np
     return real_oil_consume_mass_np
 
 
-def calc(ideal_barycenters_np: np.array, ideal_oil_consume_mass_np: np.array) -> np.array:
+def calc(ideal_barycenters_np: np.array, ideal_oil_consume_mass_np: np.array, angle_np: np.array) -> np.array:
     real_barycenters_list = []
-    rest_oil_mass_np = np.array(Aircraft.OIL_TANK_INIT_OIL_MASS)
+    # OIL_TANK_INIT_OIL_VOLUME (0.405, 1.936, 2.376, 2.652, 2.88, 1.2)
+    rest_oil_mass_np = np.array([0.4, 1.9, 2.3, 2.6, 2.8, 1.2]) * Aircraft.OIL_DENSITY_KGpm3
     max_distance = 0.0
     angle = 0.0
     for time in range(7200):
@@ -228,6 +204,10 @@ def calc(ideal_barycenters_np: np.array, ideal_oil_consume_mass_np: np.array) ->
                                                                 [mass_oil, Aircraft.AIRCRAFT_NET_WEIGHT])
         real_barycenters_list.append([real_barycenter.x, real_barycenter.y, real_barycenter.z])
         # print(f"{time:d}\t{real_barycenter.x}\t{real_barycenter.y}\t{real_barycenter.z}")
+
+        oil_consume_mass_np[1] += oil_consume_mass_np[0]
+        oil_consume_mass_np[4] += oil_consume_mass_np[5]
+        # print(f"{time:d}\t{rest_oil_mass_np}\t{oil_consume_mass_np}")
         print(f"{time:d}\t{oil_consume_mass_np.tolist()}")
 
         distance = distance3d(ideal_barycenter, real_barycenter)
@@ -240,12 +220,13 @@ def calc(ideal_barycenters_np: np.array, ideal_oil_consume_mass_np: np.array) ->
 
 
 if __name__ == '__main__':
-    # data_ = pd.read_excel("data.xlsx", "Problem2").values
-    # np.set_printoptions(precision=3)
-    # ideal_barycenters_np_ = data_[:, 1:4]
-    # ideal_oil_consume_mass_np_ = data_[:, 4]
-    # # plot_track(ideal_barycenters_np_, None)
-    # real_barycenters_np_ = calc(ideal_barycenters_np_, ideal_oil_consume_mass_np_)
-    # plot_track(ideal_barycenters_np_[:real_barycenters_np_.shape[0]], real_barycenters_np_)
-    plot_oil()
+    data_ = pd.read_excel("data.xlsx", "Problem3").values
+    np.set_printoptions(precision=3)
+    ideal_barycenters_np_ = np.zeros((7200, 3), dtype=np.float64)
+    angle_np_ = data_[:, 1]
+    ideal_oil_consume_mass_np_ = data_[:, 2]
+    # plot_track(ideal_barycenters_np_, None)
+    real_barycenters_np_ = calc(ideal_barycenters_np_, ideal_oil_consume_mass_np_, angle_np_)
+    plot_track(ideal_barycenters_np_[:real_barycenters_np_.shape[0]], real_barycenters_np_)
+    # plot_oil()
     # plot_oil_main_tank()

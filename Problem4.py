@@ -10,30 +10,47 @@ import BaryCenter
 from Point import Point3d, distance3d
 
 
-# max_distance = 0.06963137125681296
-
+# max_distance = 0.08628671560268458
 def plot_oil() -> None:
     data = pd.read_excel("Results.xlsx", "第四问结果").values[:, :7]
     x, y = [[], [], [], [], [], [], []], [[], [], [], [], [], [], []]
-    scale = 1.8
+    scale = 1.7
     for time, s1, s2, s3, s4, s5, s6 in data:
         time = int(time)
-        if s1 > 0:
+        if (len(y[1]) > 0 and y[1][-1] == 1) and s1 > 0:
+            x[1].append(time)
+            y[1].append(1)
+        if (len(y[2]) > 0 and y[2][-1] == 2) and s2 > 0:
+            x[2].append(time)
+            y[2].append(2)
+        if (len(y[3]) > 0 and y[3][-1] == 3) and s3 > 0:
+            x[3].append(time)
+            y[3].append(3)
+        if (len(y[4]) > 0 and y[4][-1] == 4) and s4 > 0:
+            x[4].append(time)
+            y[4].append(4)
+        if (len(y[5]) > 0 and y[5][-1] == 5) and s5 > 0:
+            x[5].append(time)
+            y[5].append(5)
+        if (len(y[6]) > 0 and y[6][-1] == 6) and s6 > 0:
+            x[6].append(time)
+            y[6].append(6)
+        if (len(y[1]) > 0 and y[1][-1] > 1) or s1 > 0:
             x[1].append(time)
             y[1].append(1 + s1 / scale)
-        if s2 > 0:
+        if (len(y[2]) > 0 and y[2][-1] > 2) or s2 > 0:
             x[2].append(time)
             y[2].append(2 + s2 / scale)
-        if s3 > 0:
+        if (len(y[3]) > 0 and y[3][-1] > 3) or s3 > 0:
             x[3].append(time)
             y[3].append(3 + s3 / scale)
-        if s4 > 0:
+        if (len(y[4]) > 0 and y[4][-1] > 4) or s4 > 0:
             x[4].append(time)
             y[4].append(4 + s4 / scale)
-        if s5 > 0:
+        if (len(y[5]) > 0 and y[5][-1] > 5) or s5 > 0:
             x[5].append(time)
             y[5].append(5 + s5 / scale)
-        if s6 > 0:
+        if (len(y[6]) > 0 and y[6][-1] > 6) or s6 > 0:
             x[6].append(time)
             y[6].append(6 + s6 / scale)
 
@@ -85,7 +102,7 @@ def plot_track(ideal_barycenters_np: np.array, real_barycenters_np: np.array = N
 
         colors = ["red", "orange", "yellow", "green", "blue", "purple"]
         for k, time in enumerate([1, 1800, 3600, 5400, 7200]):
-            if time < x.shape[0]:
+            if time <= x.shape[0]:
                 if ideal_or_real == "Real":
                     ax.scatter(x[time - 1], y[time - 1], z[time - 1], s=120, color=colors[k], label=f"{time}")
                 else:
@@ -98,18 +115,18 @@ def plot_track(ideal_barycenters_np: np.array, real_barycenters_np: np.array = N
     if real_barycenters_np is not None:
         plot_one_track(real_barycenters_np, "yellow", "Real")
 
-    # ax.set_xlabel('X', fontsize=16)
-    # ax.set_ylabel('Y', fontsize=16)
-    # ax.set_zlabel('Z', fontsize=16)
-    ax.set_xlim([-0.8, 0.8])
-    ax.set_xticks([-0.8, -0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8])
-    ax.set_xticklabels([-0.8, -0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8], fontsize=16)
-    ax.set_ylim([-0.6, 1.0])
-    ax.set_yticks([-0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
-    ax.set_yticklabels([-0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0], fontsize=16)
-    ax.set_zlim([-0.8, 0.8])
-    ax.set_zticks([-0.8, -0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8])
-    ax.set_zticklabels([-0.8, -0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8], fontsize=16)
+    ax.set_xlabel('X', fontsize=16)
+    ax.set_ylabel('Y', fontsize=16)
+    ax.set_zlabel('Z', fontsize=16)
+    ax.set_xlim([-0.6, 0.6])
+    ax.set_xticks([-0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6])
+    ax.set_xticklabels([-0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3], fontsize=16)
+    # ax.set_ylim([-0.08, 0.08])
+    # ax.set_yticks([-0.08, -0.04, 0.0, 0.04, 0.08])
+    # ax.set_yticklabels([-0.08, -0.04, 0.0, 0.04, 0.08], fontsize=16)
+    # ax.set_zlim([-0.08, 0.08])
+    # ax.set_zticks([-0.08, -0.04, 0.0, 0.04, 0.08])
+    # ax.set_zticklabels([-0.08, -0.04, 0.0, 0.04, 0.08], fontsize=16)
     ax.legend(loc="upper left", fontsize=16)
 
     plt.show()
@@ -166,8 +183,15 @@ def evaluate_oil_plan(time: int, ideal_oil_consume_mass: float, rest_oil_mass_np
         oil_output_from(1, ideal_oil_consume_mass * 0.5)
         if not is_meet_oil_need():
             oil_output_from(3, oil_still_need_mass())
+    elif time <= 4800:
+        oil_output_from(4, ideal_oil_consume_mass * 0.8)
+        if not is_meet_oil_need():
+            oil_output_from(5, oil_still_need_mass())
     elif time <= 7200:
-        oil_output_from(3, ideal_oil_consume_mass * 2)
+        oil_output_from(3, ideal_oil_consume_mass * 0.8)
+        oil_output_from(1, ideal_oil_consume_mass)
+        if not is_meet_oil_need():
+            oil_output_from(2, oil_still_need_mass())
 
     if not is_meet_oil_need():
         raise ValueError("Real Oil < Ideal Oil")
@@ -185,7 +209,7 @@ def calc(ideal_barycenters_np: np.array, ideal_oil_consume_mass_np: np.array, an
         angle = angle_np[time]
 
         # TODO: time limit
-        if time > 1000:
+        if time > 7200:
             break
 
         ideal_barycenter = ideal_barycenters_np[time]
@@ -220,13 +244,13 @@ def calc(ideal_barycenters_np: np.array, ideal_oil_consume_mass_np: np.array, an
 
 
 if __name__ == '__main__':
-    data_ = pd.read_excel("data.xlsx", "Problem3").values
-    np.set_printoptions(precision=3)
-    ideal_barycenters_np_ = np.zeros((7200, 3), dtype=np.float64)
-    angle_np_ = data_[:, 1]
-    ideal_oil_consume_mass_np_ = data_[:, 2]
-    # plot_track(ideal_barycenters_np_, None)
-    real_barycenters_np_ = calc(ideal_barycenters_np_, ideal_oil_consume_mass_np_, angle_np_)
-    plot_track(ideal_barycenters_np_[:real_barycenters_np_.shape[0]], real_barycenters_np_)
+    # data_ = pd.read_excel("data.xlsx", "Problem4").values
+    # np.set_printoptions(precision=3)
+    # ideal_barycenters_np_ = np.zeros((7200, 3), dtype=np.float64)
+    # angle_np_ = data_[:, 2]
+    # ideal_oil_consume_mass_np_ = data_[:, 1]
+    # # plot_track(ideal_barycenters_np_, None)
+    # real_barycenters_np_ = calc(ideal_barycenters_np_, ideal_oil_consume_mass_np_, angle_np_)
+    # plot_track(ideal_barycenters_np_[:real_barycenters_np_.shape[0]], real_barycenters_np_)
     # plot_oil()
-    # plot_oil_main_tank()
+    plot_oil_main_tank()
